@@ -92,11 +92,6 @@ async def process_bug(output_dir, language, bug, branch, interpret, main_commit,
             os.remove(f"{language}-tmp/main.dfy")
             print(f"interestingness_test returns: {process.returncode}")
             if process.returncode != 0:
-                os.makedirs(f"tmp/{language}", exist_ok=True)
-                subprocess.run(["cp", f"{output_dir}{language}-interestingness_test.sh", f"tmp/{language}/interestingness_test.sh"], check=True)
-                subprocess.run(["cp", f"{output_dir}main.dfy", f"tmp/{language}/main.dfy"], check=True)
-                subprocess.run(["cp", f"{output_dir}fuzz-d.log", f"tmp/{language}/fuzz-d.log"], check=True)
-                subprocess.run(["aws", "s3", "cp", f"tmp/{language}/", f"s3://compfuzzci/interest_failed/{language}-{TASK_ID}/", "--recursive"], check=True)
                 return 0
 
         # Copy interestingness test, fuzz_d.log, main.dfy to folder for the task in S3
