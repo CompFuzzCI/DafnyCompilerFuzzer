@@ -2,13 +2,25 @@ name: Fuzz
 on:
   workflow_dispatch:
     inputs:
+      pr:
+        description: 'PR number'
+        required: false
+        type: string
+      author:
+        description: 'Author of the PR'
+        required: false
+        type: string
+      head_sha:
+        description: 'SHA of the PR head'
+        required: false
+        type: string
       commit:
         description: 'Commit ID of to lauch fuzzing'
-        required: true
+        required: false
         type: string
       main_commit:
         description: 'Commit ID of the main branch'
-        required: true
+        required: false
         type: string
       branch:
         description: 'Branch to fuzz'
