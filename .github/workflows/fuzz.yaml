@@ -2,12 +2,20 @@ name: Fuzz
 on:
   workflow_dispatch:
     inputs:
+      pr:
+        description: 'PR number'
+        required: true
+        type: string
       author:
         description: 'Author of the PR'
         required: true
         type: string
       branch:
         description: 'Branch to fuzz'
+        required: true
+        type: string
+      head_sha:
+        description: 'SHA of the PR head'
         required: true
         type: string
       duration:

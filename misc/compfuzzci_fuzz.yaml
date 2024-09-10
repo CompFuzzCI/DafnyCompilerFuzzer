@@ -27,8 +27,10 @@ jobs:
                   workflow_id: 'fuzz.yaml',
                   ref: 'main',
                   inputs: {
+                      pr: '${{github.event.pull_request.number}}',
                       author: '${{github.event.pull_request.user.login}}',
                       branch: '${{github.event.pull_request.head.ref}}',
+                      head_sha: '${{github.event.pull_request.head.sha}}',
                       duration: '3600',
                       instance: '2'
                   }
