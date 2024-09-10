@@ -20,11 +20,6 @@ if __name__ == "__main__":
         hashed_bug = f.readline().strip()
         processing = f.readline().strip()
 
-    os.makedirs("bisection", exist_ok=True)
-    # Create an empty text file in the "bisection" folder
-    with open("bisection/commit_order.txt", 'w') as file_obj:
-        pass
-
     if processing == "False":  
         location = branch
         # Get the location of the bug
@@ -136,4 +131,3 @@ if __name__ == "__main__":
         file_obj.write(f"{first_bad_commit}\n")
 
     subprocess.run(["aws", "s3", "cp", "bisect_result.txt", f"{file_folder}bisect_result.txt"], check=True)
-    subprocess.run(["aws", "s3", "cp", "bisection/", f"s3://compfuzzci/bisection/{location}-{language}/", "--recursive"], check=True)
