@@ -1,5 +1,6 @@
 # This workflow is triggered on PR being opened, synced, reopened, closed.
 # It dispatches workflow on CompFuzzCI repository, where fuzzing of the PR is handled.
+# For problems or suggestions, contact karnbongkot.boonriong23@imperial.ac.uk
 
 name: Fuzzing on PR
 on:

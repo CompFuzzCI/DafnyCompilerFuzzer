@@ -16,15 +16,9 @@ if __name__ == "__main__":
     subprocess.run(["chmod", "+x", "/compfuzzci/interestingness_test.sh"], check=True)
     # Read branch, language, main_commit, hashed bug
     with open("/compfuzzci/data.txt", 'r') as f:
-
         language = f.readline().strip()
         hashed_bug = f.readline().strip()
         processing = f.readline().strip()
-
-    os.makedirs("bisection", exist_ok=True)
-    # Create an empty text file in the "bisection" folder
-    with open("bisection/commit_order.txt", 'w') as file_obj:
-        pass
 
     main_commit = subprocess.check_output(["git", "rev-parse", "master"], cwd='dafny').decode().strip()
     branch_commit = subprocess.check_output(["git", "rev-parse", branch], cwd='dafny').decode().strip()
@@ -139,4 +133,3 @@ if __name__ == "__main__":
         file_obj.write(f"{first_bad_commit}\n")
 
     subprocess.run(["aws", "s3", "cp", "bisect_result.txt", f"{file_folder}bisect_result.txt"], check=True)
-    subprocess.run(["aws", "s3", "cp", "bisection/", f"s3://compfuzzci/bisection/{location}-{language}/", "--recursive"], check=True)
