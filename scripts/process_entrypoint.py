@@ -42,7 +42,7 @@ def extract_code_from_issue_body(issue_no):
     
 if __name__ == "__main__":
     print(f"Processing issue {issue_no}")
-    current_branch_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd='dafny').decode().strip()
+    subprocess.run(["./setup_dafny.sh", "dafny-lang", "master"], check=True)
     code = extract_code_from_issue_body(issue_no)
     if code:
         write_code_to_file(code)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     threads = []
     for language, bug in bugs.items():
         if bug:
-            t = Thread(target=process_bug_handler, args=("", language, bug, "master", interpret, current_branch_commit, current_branch_commit, True, issue_no))
+            t = Thread(target=process_bug_handler, args=("", language, bug, "dafny-lang", "master", interpret, True, issue_no))
             threads.append(t)
             t.start()
 

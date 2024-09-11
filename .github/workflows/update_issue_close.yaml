@@ -23,7 +23,7 @@ jobs:
           aws-region: ${{secrets.AWS_REGION}}
       - name: List files in S3 with issue number as suffix
         run: |
-          files=$(aws s3 ls s3://compfuzzci/bugs/main/ --recursive | grep "${{ github.event.inputs.issue_number }} | awk '{print $2}'")
+          files=$(aws s3 ls s3://compfuzzci/bugs/main/ --recursive | grep "${{ github.event.inputs.issue_number }}" | awk '{print $2}')
           IFS=$'\n'
           for file in $files; do
             aws s3 rm "s3://compfuzzci/bugs/main/$file"

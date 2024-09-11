@@ -1,6 +1,8 @@
 FROM --platform=linux/x86_64 ubuntu:22.04
 RUN mkdir /compfuzzci
+COPY entrypoint.sh /compfuzzci/entrypoint.sh
 WORKDIR /compfuzzci
+
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt install -y unzip wget curl
@@ -31,5 +33,11 @@ RUN go install golang.org/x/tools/cmd/goimports@latest
 #Install Rust
 RUN curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
 
-#Install creduce
-RUN apt-get install -y creduce
+# Prepare for fuzzing
+RUN mkdir data
+RUN chmod +x entrypoint.sh
+ENV PATH="/compfuzzci/dafny/Scripts:${PATH}"
+ENV PATH="/root/go/bin:${PATH}"
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+ENTRYPOINT ["/compfuzzci/entrypoint.sh"]

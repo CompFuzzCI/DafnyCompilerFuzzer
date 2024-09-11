@@ -47,11 +47,11 @@ def is_duplicate(branch="master", language= "dafny", hashed_bug=""):
 
     return False
 
-async def process_bug(output_dir, language, bug, branch, interpret, main_commit, current_branch_commit, processing=False, issue_no="None"):
+async def process_bug(output_dir, language, bug, author, branch, interpret, processing=False, issue_no="None"):
 
     async def handle_bisection_reduction():
         reduction_task = asyncio.create_task(reduction(processing, output_dir, language, interpret))
-        bisection_result = await bisection(f"{S3_folder}/{language}/", current_branch_commit)
+        bisection_result = await bisection(f"{S3_folder}/{language}/", author, branch)
         print(f"Bisection result arrived: Location={bisection_result[0]}, First bad commit={bisection_result[1]}")
         if bisection_result[1] == "duplicated":
             print("Bug is duplicated. Cancelling reduction task.")
@@ -100,10 +100,7 @@ async def process_bug(output_dir, language, bug, branch, interpret, main_commit,
         subprocess.run(["cp", f"{output_dir}main.dfy", f"tmp/{language}/main.dfy"], check=True)
 
         with open(f"tmp/{language}/data.txt", 'w') as f:
-            f.write(f"{branch}\n")
             f.write(f"{language}\n")
-            f.write(f"{main_commit}\n")
-            f.write(f"{current_branch_commit}\n")
             f.write(f"{hashed_bug}\n")
             f.write(f"{processing}\n")
         f.close()
@@ -153,10 +150,10 @@ async def process_bug(output_dir, language, bug, branch, interpret, main_commit,
         print(f"Not interesting: Duplicate or known error in {language}")
         return 0
 
-def process_bug_handler(output_dir, language, bug, branch, interpret, main_commit, current_branch_commit, processing, issue_no):
+def process_bug_handler(output_dir, language, bug, author, branch, interpret, processing, issue_no):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(process_bug(output_dir, language, bug, branch, interpret, main_commit, current_branch_commit, processing, issue_no))
+        loop.run_until_complete(process_bug(output_dir, language, bug, author, branch, interpret, processing, issue_no))
     finally:
         loop.close()

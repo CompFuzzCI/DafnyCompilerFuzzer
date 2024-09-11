@@ -1,4 +1,3 @@
-import asyncio
 import subprocess
 import time
 import sys
@@ -8,19 +7,18 @@ from match_error import match_error
 from process_bug import process_bug_handler
 
 # Set a default duration in seconds (1800 seconds for 30 minutes)
-default_duration = 1800
+default_duration = 3600
 
 # Set the commit, commit before, and duration
-main_commit = sys.argv[1]
-duration = int(sys.argv[2]) if sys.argv[2] else default_duration
+duration = int(sys.argv[1]) if sys.argv[1] else default_duration
+author = sys.argv[2]
 branch = sys.argv[3]
 start_time = time.time()
 
 if __name__ == "__main__":
-    current_branch_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd='dafny').decode().strip()
+    subprocess.run(["./setup_dafny.sh", author, branch], check=True)
     while (time.time() - start_time) < duration:
         # Fuzz until we hit an interesting case
-        print(f"Fuzzing commit {current_branch_commit}")
         output = subprocess.run(["timeout", "60", "java", "-jar", "fuzz_d.jar", "fuzz"], capture_output=True, text=True)
         if output.returncode == 0:
             output_dir = output.stdout.split(': ')[-1].strip()
@@ -33,7 +31,7 @@ if __name__ == "__main__":
             threads = []
             for language, bug in bugs.items():
                 if bug:
-                    t = Thread(target=process_bug_handler, args=(output_dir, language, bug, branch, interpret, main_commit, current_branch_commit, False, "None"))
+                    t = Thread(target=process_bug_handler, args=(output_dir, language, bug, author, branch, interpret, False, "None"))
                     threads.append(t)
                     t.start()
 
@@ -43,6 +41,6 @@ if __name__ == "__main__":
             if output_dir:
                 subprocess.run(["rm", "-rf", output_dir])
         else:
-            print("Fuzz-d crashed")
+            print("Fuzz-d crashed or timed out")
 
     sys.exit(0)
