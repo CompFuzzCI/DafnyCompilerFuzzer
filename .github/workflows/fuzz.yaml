@@ -9,7 +9,6 @@ on:
       author:
         description: 'Author of the PR'
         required: true
-        type: string
       branch:
         description: 'Branch to fuzz'
         required: true
