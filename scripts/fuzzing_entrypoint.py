@@ -21,13 +21,10 @@ def remove_fuzz_d_error(bug):
                     "Error: branches of if-then-else have incompatible types", "Error: the two branches of an if-then-else expression must have the same type",
                     "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
                     "Error: Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
-    for error in known_errors:
-        for b in bug:
-            if error in b:
-                bug.remove(b)
     
-    return bug
-
+    filtered_bug = [b for b in bug if not any(error in b for error in known_errors)]
+    
+    return filtered_bug
 if __name__ == "__main__":
     while (time.time() - start_time) < duration:
         # Fuzz until we hit an interesting case
