@@ -29,8 +29,27 @@ permissions:
   id-token: write
   contents: read
 jobs:
+  CheckInfo:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_head: ${{ steps.check-author.outputs.pr_head }}
+    steps:
+      - name: Check PR head
+        id: check-author
+        run: |
+          if git ls-remote --exit-code --heads https://github.com/${{ github.event.inputs.author }}/dafny.git ${{ github.event.inputs.branch }}; then
+            echo "pr_head=${{github.event.inputs.author}}" >> "$GITHUB_OUTPUT"
+          else
+            if git ls-remote --exit-code --heads https://github.com/dafny-lang/dafny.git ${{ github.event.inputs.branch }}; then
+              echo "pr_head=dafny-lang" >> "$GITHUB_OUTPUT"
+            else
+              echo "pr_head=invalid" >> "$GITHUB_OUTPUT"
+            fi
+          fi
   BuildImage:
     runs-on: ubuntu-latest
+    needs: CheckInfo
+    if: needs.CheckInfo.outputs.pr_head != 'invalid'
     outputs:
       build-successful: ${{ steps.build-push.outputs.build-successful }}
     steps:
