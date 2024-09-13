@@ -73,7 +73,7 @@ jobs:
           REGISTRY_ALIAS: compfuzzci
           REPOSITORY: compfuzzci-dafny
           IMAGE: ${{github.event.inputs.author}}-${{github.event.inputs.branch}}
-          AUTHOR: ${{ steps.check-author.outputs.pr_head }}
+          AUTHOR: ${{ needs.CheckInfo.outputs.pr_head }}
           BRANCH: ${{github.event.inputs.branch}}
         run: |
           max_attempts=5
