@@ -15,6 +15,19 @@ author = sys.argv[2]
 branch = sys.argv[3]
 start_time = time.time()
 
+def remove_fuzz_d_error(bug):
+    known_errors = ["All elements of display must have some common supertype", "type of left argument to +",
+                    "type parameter is not declared in this scope", "Error: the type of this expression is underspecified",
+                    "Error: branches of if-then-else have incompatible types", "Error: the two branches of an if-then-else expression must have the same type",
+                    "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
+                    "Error: Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
+    for error in known_errors:
+        for b in bug:
+            if error in b:
+                bug.remove(b)
+    
+    return bug
+
 if __name__ == "__main__":
     while (time.time() - start_time) < duration:
         # Fuzz until we hit an interesting case
@@ -26,9 +39,9 @@ if __name__ == "__main__":
             print(bugs)
             # Figure out if we can validate with interpreter
             interpret = False
-
             threads = []
             for language, bug in bugs.items():
+                bug = remove_fuzz_d_error(bug)
                 if bug:
                     t = Thread(target=process_bug_handler, args=(output_dir, language, bug, author, branch, interpret, False, "None"))
                     threads.append(t)
