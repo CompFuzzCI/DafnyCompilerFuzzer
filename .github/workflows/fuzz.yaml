@@ -38,12 +38,12 @@ jobs:
         id: check-author
         run: |
           if git ls-remote --exit-code --heads https://github.com/${{ github.event.inputs.author }}/dafny.git ${{ github.event.inputs.branch }}; then
-            echo "pr_head='${{github.event.inputs.author}}'" >> "$GITHUB_OUTPUT"
+            echo "pr_head=${{github.event.inputs.author}}" >> "$GITHUB_OUTPUT"
           else
             if git ls-remote --exit-code --heads https://github.com/dafny-lang/dafny.git ${{ github.event.inputs.branch }}; then
-              echo "pr_head='dafny-lang'" >> "$GITHUB_OUTPUT"
+              echo "pr_head=dafny-lang" >> "$GITHUB_OUTPUT"
             else
-              echo "pr_head='invalid'" >> "$GITHUB_OUTPUT"
+              echo "pr_head=invalid" >> "$GITHUB_OUTPUT"
             fi
           fi
   BuildImage:
