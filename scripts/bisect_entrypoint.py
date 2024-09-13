@@ -8,7 +8,6 @@ if __name__ == "__main__":
     author=sys.argv[2]
     branch=sys.argv[3]
     #Set up dafny
-    subprocess.run(["./setup_dafny.sh", author, branch], check=True)
     s3 = boto3.resource('s3')
 
     #download the file

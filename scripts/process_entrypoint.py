@@ -42,7 +42,6 @@ def extract_code_from_issue_body(issue_no):
     
 if __name__ == "__main__":
     print(f"Processing issue {issue_no}")
-    subprocess.run(["./setup_dafny.sh", "dafny-lang", "master"], check=True)
     code = extract_code_from_issue_body(issue_no)
     if code:
         write_code_to_file(code)

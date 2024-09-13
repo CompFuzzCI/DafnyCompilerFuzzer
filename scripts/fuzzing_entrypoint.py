@@ -16,7 +16,6 @@ branch = sys.argv[3]
 start_time = time.time()
 
 if __name__ == "__main__":
-    subprocess.run(["./setup_dafny.sh", author, branch], check=True)
     while (time.time() - start_time) < duration:
         # Fuzz until we hit an interesting case
         output = subprocess.run(["timeout", "60", "java", "-jar", "fuzz_d.jar", "fuzz"], capture_output=True, text=True)
