@@ -38,7 +38,8 @@ if __name__ == "__main__":
             interpret = False
             threads = []
             for language, bug in bugs.items():
-                bug = remove_fuzz_d_error(bug)
+                if language != "miscompilation":
+                    bug = remove_fuzz_d_error(bug)
                 if bug:
                     t = Thread(target=process_bug_handler, args=(output_dir, language, bug, author, branch, interpret, False, "None"))
                     threads.append(t)
