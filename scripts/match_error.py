@@ -68,6 +68,7 @@ def match_error(fuzzd_log):
                         matches = re.findall(pattern, content)
                         for match in matches:
                             match = match.rstrip('\n')
+                            match = re.sub(r"'[^']*'", '', match)
                             if lang == 'go' and pattern == GoErrorPatterns[4]:
                                 match = match.split(':')[3:]
                                 match[0] = match[0].lstrip()
@@ -85,6 +86,7 @@ def match_error(fuzzd_log):
                         matches = re.findall(pattern, content)
                         for match in matches:
                             match = match.rstrip('\n')
+                            match = re.sub(r"'[^']*'", '', match)
                             if lang == 'go' and pattern == GoErrorPatterns[5]:
                                 match = match.split(':')[3:]
                                 match[0] = match[0].lstrip()
