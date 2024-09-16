@@ -19,9 +19,3 @@ permissions:
   id-token: write
   contents: read
 jobs:
-  UpdateIssue:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Update Issue
-        run: |
-          echo "Updating issue ${{ github.event.inputs.issue_number }} opened by ${{ github.event.inputs.issuer }} with commit ${{ github.event.inputs.commit }}"
