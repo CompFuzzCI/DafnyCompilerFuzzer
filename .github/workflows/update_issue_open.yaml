@@ -21,8 +21,6 @@ permissions:
 jobs:
   BuildImage:
     runs-on: ubuntu-latest
-    needs: CheckImage
-    if: needs.CheckImage.outputs.image-exists == 'false'
     outputs:
       build-successful: ${{ steps.build-push.outputs.build-successful }}
     steps:
