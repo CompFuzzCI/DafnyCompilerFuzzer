@@ -25,6 +25,13 @@ JavaScriptErrorPatterns = [ r'Error: .*\n', r'Process terminated\. .*\n', r'Unha
 ]
 GoErrorPatterns = [ r'Error: .*\n', r'Process terminated\. .*\n', r'Unhandled exception\. .+\n', r'Unhandled exception: .+\n',r'System.NotImplementedException: The method or operation is not implemented.', r'.*:\d+:\d+: .*\n', r'\[Program halted\] .*\n', r'fatal error: .*\n']
 
+
+known_errors = ["All elements of display must have some common supertype", "type of left argument to +",
+                "type parameter is not declared in this scope", "the type of this expression is underspecified",
+                "branches of if-then-else have incompatible types", "the two branches of an if-then-else expression must have the same type",
+                "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
+                "Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
+
 # Map language identifiers to their respective regex patterns
 error_patterns = {
     'rs': RustErrorPatterns,
@@ -67,19 +74,20 @@ def match_error(fuzzd_log):
                     for pattern in patterns:
                         matches = re.findall(pattern, content)
                         for match in matches:
-                            match = match.rstrip('\n')
-                            match = re.sub(r"'[^']*'", '', match)
-                            match = re.sub(r'"[^"]*"', '', match)
-                            if lang == 'go' and pattern == GoErrorPatterns[4]:
-                                match = match.split(':')[3:]
-                                match[0] = match[0].lstrip()
-                                match = ':'.join(match)
-                                match = match.split('at')[0]
-                            else:
-                                match = match.split(':')[1:]
-                                match = ':'.join(match).strip()
-                            result[lang].add(match)
-                
+                            if not any (error in match for error in known_errors):
+                                match = match.rstrip('\n')
+                                match = re.sub(r"'[^']*'", '', match)
+                                match = re.sub(r'"[^"]*"', '', match)
+                                if lang == 'go' and pattern == GoErrorPatterns[4]:
+                                    match = match.split(':')[3:]
+                                    match[0] = match[0].lstrip()
+                                    match = ':'.join(match)
+                                    match = match.split('at')[0]
+                                elif ':' in match:
+                                        match = match.split(':')[1:]
+                                        match = ':'.join(match).strip()
+                                result[lang].add(match)
+                    
             # Check execution failure
             if sections[2]:
                 # Split the section by the language identifier
@@ -89,18 +97,19 @@ def match_error(fuzzd_log):
                     for pattern in patterns:
                         matches = re.findall(pattern, content)
                         for match in matches:
-                            match = match.rstrip('\n')
-                            match = re.sub(r"'[^']*'", '', match)
-                            match = re.sub(r'"[^"]*"', '', match)
-                            if lang == 'go' and pattern == GoErrorPatterns[5]:
-                                match = match.split(':')[3:]
-                                match[0] = match[0].lstrip()
-                                match = ':'.join(match)
-                                match = match.split('at')[0]
-                            else:
-                                match = match.split(':')[1:]
-                                match = ':'.join(match).strip()
-                            result[lang].add(match)
+                            if not any (error in match for error in known_errors):
+                                match = match.rstrip('\n')
+                                match = re.sub(r"'[^']*'", '', match)
+                                match = re.sub(r'"[^"]*"', '', match)
+                                if lang == 'go' and pattern == GoErrorPatterns[5]:
+                                    match = match.split(':')[3:]
+                                    match[0] = match[0].lstrip()
+                                    match = ':'.join(match)
+                                    match = match.split('at')[0]
+                                elif ':' in match:
+                                        match = match.split(':')[1:]
+                                        match = ':'.join(match).strip()
+                                result[lang].add(match)
                             
             if "Different output: true" in log_content:
                 result['miscompilation'] = True
