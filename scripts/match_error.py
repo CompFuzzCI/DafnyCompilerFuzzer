@@ -26,11 +26,13 @@ JavaScriptErrorPatterns = [ r'Error: .*\n', r'Process terminated\. .*\n', r'Unha
 GoErrorPatterns = [ r'Error: .*\n', r'Process terminated\. .*\n', r'Unhandled exception\. .+\n', r'Unhandled exception: .+\n',r'System.NotImplementedException: The method or operation is not implemented.', r'.*:\d+:\d+: .*\n', r'\[Program halted\] .*\n', r'fatal error: .*\n']
 
 
-known_errors = ["All elements of display must have some common supertype", "type of left argument to +",
-                "type parameter is not declared in this scope", "the type of this expression is underspecified",
-                "branches of if-then-else have incompatible types", "the two branches of an if-then-else expression must have the same type",
-                "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
-                "Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
+known_errors = [
+    "All elements of display must have some common supertype", "type of left argument to +",
+    "type parameter is not declared in this scope", "the type of this expression is underspecified",
+    "branches of if-then-else have incompatible types", "the two branches of an if-then-else expression must have the same type",
+    "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
+    "Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"
+]
 
 # Map language identifiers to their respective regex patterns
 error_patterns = {
@@ -74,7 +76,7 @@ def match_error(fuzzd_log):
                     for pattern in patterns:
                         matches = re.findall(pattern, content)
                         for match in matches:
-                            if not any (error in match for error in known_errors):
+                            if not any(error in match for error in known_errors):
                                 match = match.rstrip('\n')
                                 match = re.sub(r"'[^']*'", '', match)
                                 match = re.sub(r'"[^"]*"', '', match)
@@ -97,7 +99,7 @@ def match_error(fuzzd_log):
                     for pattern in patterns:
                         matches = re.findall(pattern, content)
                         for match in matches:
-                            if not any (error in match for error in known_errors):
+                            if not any(error in match for error in known_errors):
                                 match = match.rstrip('\n')
                                 match = re.sub(r"'[^']*'", '', match)
                                 match = re.sub(r'"[^"]*"', '', match)
