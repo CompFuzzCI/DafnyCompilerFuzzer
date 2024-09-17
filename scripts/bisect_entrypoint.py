@@ -84,7 +84,7 @@ if __name__ == "__main__":
             result = subprocess.call(["./bisect_script.sh", last_good_commit])
             if result:
                 print("Branch out of date. Bug has already been fixed on master")
-                first_bad_commit = "deplicated"
+                first_bad_commit = "duplicated"
             else:
                 print("Bug is introduced in the branch")
                 print(f"Bisecting on {location}")

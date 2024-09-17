@@ -21,23 +21,26 @@ s3 = boto3.resource('s3')
 
 def hash_bug(bug):
     # Hash bug data and make a folder for it in location/language/
-    sorted_bug = sorted(bug)
-    concatenated_bug = ''.join(sorted_bug)
-    hashed_bug = hashlib.md5(concatenated_bug.encode()).hexdigest()
+    hashed_bug = hashlib.md5(bug.encode()).hexdigest()
     return hashed_bug
 
-def is_duplicate(branch="master", language= "dafny", hashed_bug=""):
+def is_duplicate(branch="master", language= "dafny", bug=""):
     # Define the S3 bucket and prefix
     bucket_name = "compfuzzci"
-    prefix = f"bugs/{branch}/{language}/{hashed_bug}"
-
-    # List objects in the S3 bucket with the specified prefix
-    print(f"Checking if {prefix} exists")
-    response = s3.meta.client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+    print(f"Checking if {bug} exists for {language}")
+    hashed_bug = hash_bug(bug)
+    response = s3.meta.client.list_objects_v2(Bucket=bucket_name, Prefix=f"bugs/{branch}/{language}/{hashed_bug}")
     if response.get('Contents'):
         return True
-
+    response = s3.meta.client.list_objects_v2(Bucket=bucket_name, Prefix=f"bugs/master/{language}/{hashed_bug}")
+    if response.get('Contents'):
+        return True
     return False
+
+def remove_duplicate(branch, language, bug):
+    # List objects in the S3 bucket with the specified prefix
+    filtered_bugs = [b for b in bug if not is_duplicate(branch, language, b)]
+    return filtered_bugs
 
 async def process_bug(output_dir, language, bug, author, branch, interpret, processing=False, issue_no="None"):
 
@@ -62,15 +65,12 @@ async def process_bug(output_dir, language, bug, author, branch, interpret, proc
             return bisection_result
     
     # this check only pass if bug is not duplicate anywhere.
-    if language != "miscompilation":
-        hashed_bug = hash_bug(bug)
-    else:
-        hashed_bug = bug
-
     if not processing:
             output_dir += "/"
 
-    if not (is_duplicate("master", language, hashed_bug) or is_duplicate(branch, language, hashed_bug)):
+    if language != "miscompilation":
+        bug = remove_duplicate(branch, language, bug)
+    if bug:
         print("Found interesting case in " + language)
 
         generate_interestingness_test(output_dir, interpret, bug, language)
@@ -93,7 +93,7 @@ async def process_bug(output_dir, language, bug, author, branch, interpret, proc
 
         with open(f"tmp/{language}/data.txt", 'w') as f:
             f.write(f"{language}\n")
-            f.write(f"{hashed_bug}\n")
+            f.write(f"{str(bug)}\n")
             f.write(f"{processing}\n")
         f.close()
         subprocess.run(["aws", "s3", "cp", f"tmp/{language}/", f"{S3_folder}/{language}/", "--recursive"], check=True)
@@ -125,7 +125,7 @@ async def process_bug(output_dir, language, bug, author, branch, interpret, proc
             f.write(f"Location: {location}\n")
             f.write(f"Bad commit: {first_bad_commit}\n")
             f.write(f"Language: {language}\n")
-            f.write(f"Bug: {hashed_bug}\n")
+            f.write(f"Bug: {str([hash_bug(b) for b in bug])}\n")
             f.write(f"Issue number: {issue_no}\n")
         f.close()
 
