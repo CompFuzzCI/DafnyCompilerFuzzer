@@ -18,6 +18,7 @@ start_time = time.time()
 if __name__ == "__main__":
     while (time.time() - start_time) < duration:
         # Fuzz until we hit an interesting case
+        print(f"Fuzzing {branch}")
         output = subprocess.run(["timeout", "60", "java", "-jar", "fuzz_d.jar", "fuzz"], capture_output=True, text=True)
         if output.returncode == 0:
             output_dir = output.stdout.split(': ')[-1].strip()
