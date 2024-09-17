@@ -77,7 +77,7 @@ def match_error(fuzzd_log):
                                 match = match.split('at')[0]
                             else:
                                 match = match.split(':')[1:]
-                                match = ':'.join(match)
+                                match = ':'.join(match).strip()
                             result[lang].add(match)
                 
             # Check execution failure
@@ -99,7 +99,7 @@ def match_error(fuzzd_log):
                                 match = match.split('at')[0]
                             else:
                                 match = match.split(':')[1:]
-                                match = ':'.join(match)
+                                match = ':'.join(match).strip()
                             result[lang].add(match)
                             
             if "Different output: true" in log_content:

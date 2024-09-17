@@ -17,10 +17,10 @@ start_time = time.time()
 
 def remove_fuzz_d_error(bug):
     known_errors = ["All elements of display must have some common supertype", "type of left argument to +",
-                    "type parameter is not declared in this scope", "Error: the type of this expression is underspecified",
-                    "Error: branches of if-then-else have incompatible types", "Error: the two branches of an if-then-else expression must have the same type",
+                    "type parameter is not declared in this scope", "the type of this expression is underspecified",
+                    "branches of if-then-else have incompatible types", "the two branches of an if-then-else expression must have the same type",
                     "incompatible types", "Unexpected field to assign whose isAssignedVar is not in the environment",
-                    "Error: Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
+                    "Microsoft.Dafny.UnsupportedInvalidOperationException", "index", "Index"]
     
     filtered_bug = [b for b in bug if not any(error in b for error in known_errors)]
     
