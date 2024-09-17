@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import requests
@@ -19,6 +20,11 @@ S3_folder = "s3://compfuzzci/tmp/" + TASK_ID
 # Create an S3 resource object
 s3 = boto3.resource('s3')
 
+def remove_names(bug):
+    bug = re.sub(r"'[^']*'", '', bug)
+    bug = re.sub(r'"[^"]*"', '', bug)
+    return bug
+
 def hash_bug(bug):
     # Hash bug data and make a folder for it in location/language/
     hashed_bug = hashlib.md5(bug.encode()).hexdigest()
@@ -28,7 +34,7 @@ def is_duplicate(branch="master", language= "dafny", bug=""):
     # Define the S3 bucket and prefix
     bucket_name = "compfuzzci"
     print(f"Checking if {bug} exists for {language}")
-    hashed_bug = hash_bug(bug)
+    hashed_bug = hash_bug(remove_names(bug))
     response = s3.meta.client.list_objects_v2(Bucket=bucket_name, Prefix=f"bugs/{branch}/{language}/{hashed_bug}")
     if response.get('Contents'):
         return True
@@ -125,7 +131,7 @@ async def process_bug(output_dir, language, bug, author, branch, interpret, proc
             f.write(f"Location: {location}\n")
             f.write(f"Bad commit: {first_bad_commit}\n")
             f.write(f"Language: {language}\n")
-            f.write(f"Bug: {str([hash_bug(b) for b in bug])}\n")
+            f.write(f"Bug: {str([hash_bug(remove_names(b)) for b in bug])}\n")
             f.write(f"Issue number: {issue_no}\n")
         f.close()
 
