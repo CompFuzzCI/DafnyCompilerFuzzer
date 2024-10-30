@@ -17,12 +17,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Authenticate with AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
-      - name: Remove folder in S3
-        run: |
-          aws s3 rm s3://compfuzzci/bugs/${{ github.event.inputs.pr_head_ref }} --recursive
+      # - name: Authenticate with AWS
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{secrets.AWS_REGION}}
+      # - name: Remove folder in S3
+      #   run: |
+      #     aws s3 rm s3://compfuzzci/bugs/${{ github.event.inputs.pr_head_ref }} --recursive
