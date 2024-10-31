@@ -77,39 +77,39 @@ jobs:
       #       exit 1
       #     fi
   # ProcessBug:
-    runs-on: ubuntu-latest
-    needs: BuildImage
-    if: needs.BuildImage.outputs.build-successful == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Authenticate with AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
-      - name: Login to AWS ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry-type: public
-      - name: Render ECS Task Definition
-        id: render-task-def
-        uses: kbuaaaaaa/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: processing_task_definition.json
-          container-name: processing-container
-          image: ${{ steps.login-ecr.outputs.registry }}/compfuzzci/compfuzzci-dafny:dafny-lang-master
-          environment-variables: GITHUB_TOKEN=${{ secrets.COMPFUZZCI_PAT }}
-          execution-role-arn: ${{ secrets.ECS_TASK_EXECUTION_ROLE_ARN }}
-          task-role-arn: ${{ secrets.ECS_TASK_ROLE_ARN }}
-          command: process ${{github.event.inputs.issue_number}}
-      - name: Register Amazon ECS task definition
-        id: register-task-def
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-      - name: Deploy ECS Task
-        run: |
-          aws ecs run-task --cluster ${{ secrets.ECS_CLUSTER }} --task-definition ${{ steps.register-task-def.outputs.task-definition-arn }} --count 1
+    # runs-on: ubuntu-latest
+    # needs: BuildImage
+    # if: needs.BuildImage.outputs.build-successful == 'true'
+    # steps:
+    #   - name: Checkout
+    #     uses: actions/checkout@v4
+    #   - name: Authenticate with AWS
+    #     uses: aws-actions/configure-aws-credentials@v4
+    #     with:
+    #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #       aws-region: ${{secrets.AWS_REGION}}
+    #   - name: Login to AWS ECR
+    #     id: login-ecr
+    #     uses: aws-actions/amazon-ecr-login@v2
+    #     with:
+    #       registry-type: public
+    #   - name: Render ECS Task Definition
+    #     id: render-task-def
+    #     uses: kbuaaaaaa/amazon-ecs-render-task-definition@v1
+    #     with:
+    #       task-definition: processing_task_definition.json
+    #       container-name: processing-container
+    #       image: ${{ steps.login-ecr.outputs.registry }}/compfuzzci/compfuzzci-dafny:dafny-lang-master
+    #       environment-variables: GITHUB_TOKEN=${{ secrets.COMPFUZZCI_PAT }}
+    #       execution-role-arn: ${{ secrets.ECS_TASK_EXECUTION_ROLE_ARN }}
+    #       task-role-arn: ${{ secrets.ECS_TASK_ROLE_ARN }}
+    #       command: process ${{github.event.inputs.issue_number}}
+    #   - name: Register Amazon ECS task definition
+    #     id: register-task-def
+    #     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    #     with:
+    #       task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+    #   - name: Deploy ECS Task
+    #     run: |
+    #       aws ecs run-task --cluster ${{ secrets.ECS_CLUSTER }} --task-definition ${{ steps.register-task-def.outputs.task-definition-arn }} --count 1
